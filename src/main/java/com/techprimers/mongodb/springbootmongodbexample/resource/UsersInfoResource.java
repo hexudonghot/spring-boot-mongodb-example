@@ -19,7 +19,7 @@ public class UsersInfoResource {
     }
 
     @GetMapping("/all")
-    public List<Userinfo> getAll() {
-        return userInfoRepository.findAll();
+    public Userinfo getAll() {
+        return userInfoRepository.findOne("5cd164a880a857acbb2c8b6b");
     }
 }
