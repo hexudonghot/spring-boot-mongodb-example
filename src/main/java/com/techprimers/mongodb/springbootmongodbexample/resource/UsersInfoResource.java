@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -74,4 +73,11 @@ public class UsersInfoResource {
         template.updateFirst(query,update,Viewtemplate.class);
     }
 
+
+    /**
+     * http://10.1.8.96:8095/rest/usersinfo/find?id=12
+     * http://10.1.8.96:8095/rest/usersinfo/update?fk=aaaa&img=bbbb&id1=12&id2=33
+     * http://10.1.8.96:8095/rest/usersinfo/add?id1=12&id2=44&view=aaa&image=444
+     * http://10.1.8.96:8095/rest/usersinfo/del?id1=12&id2=44
+     */
 }
