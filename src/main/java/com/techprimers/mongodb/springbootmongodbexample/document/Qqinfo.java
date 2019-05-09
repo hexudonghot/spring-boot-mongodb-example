@@ -11,8 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Setter
 @Getter
-public class Userinfo
+public class Qqinfo
 {
-    private String  id;
+    private int  id;
+    private String  tag;
     private String data;
 }
