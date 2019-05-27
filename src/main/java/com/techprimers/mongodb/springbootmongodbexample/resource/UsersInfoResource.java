@@ -10,9 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +19,6 @@ import java.util.Map;
  * @author yzl
  */
 @RestController
-@RequestMapping("/rest/usersinfo")
 public class UsersInfoResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(MongoTemplate.class);
     private UserInfoRepository userInfoRepository;
@@ -30,54 +27,71 @@ public class UsersInfoResource {
     public UsersInfoResource(UserInfoRepository userRepository) {
         this.userInfoRepository = userRepository;
     }
-    @GetMapping("/update")
-    public void update(String fk, String img, String id1,String id2)
+    @RequestMapping("/update")
+    @ResponseBody
+    public void update(@RequestParam("view") String view, @RequestParam("image") String image, @RequestParam("id") String id,@RequestParam("userid") String userid)
     {
         Update update =new Update();
-        update.set("template.$.view", fk);
-        update.set("template.$.image", img);
-        Query query = Query.query(new Criteria().andOperator(Criteria.where("_id").is(id1),Criteria.where("template").elemMatch(Criteria.where("_id").is(id2))));
+        update.set("template.$.view", view);
+        update.set("template.$.image", image);
+        Query query = Query.query(new Criteria().
+                andOperator(Criteria.where("_id").is(id),
+                        Criteria.where("template").elemMatch(Criteria.where("userid").is(userid))));
         template.updateFirst(query, update, Viewtemplate.class);
     }
 
-    @GetMapping("/find")
-    public Viewtemplate find(String id)
-    {
-        Query query = Query.query(new Criteria().andOperator(Criteria.where("_id").is(id)));
-        Viewtemplate info= template.findOne(query,Viewtemplate.class);
-        return info;
-    }
 
 
-    @GetMapping("/add")
-    public void add(String id1,String id2,String view,String image)
+    @ResponseBody
+    @RequestMapping(value = "/add")
+    public void add(String userid,String view,String image,String id)
     {
         Map mp = new HashMap();
-        mp.put("_id",id2);
+        mp.put("userid",userid);
         mp.put("view",view);
         mp.put("image",image);
         Update update = new Update();
         update.push("template",new BasicDBObject(mp));
-        Query query = Query.query(Criteria.where("_id").is(id1));
+        Query query = Query.query(Criteria.where("_id").is(id));
+        template.updateFirst(query,update,Viewtemplate.class);
+    }
+
+
+    @RequestMapping(value = "/del",method = RequestMethod.POST)
+    public void del(@RequestHeader("id") String id,@RequestHeader("userid")String userid)
+    {
+        Update update = new Update();
+        update.pull("template",new BasicDBObject("userid",userid));
+        Query query = Query.query(Criteria.where("_id").is(id));
         template.updateFirst(query,update,Viewtemplate.class);
     }
 
 
 
-    @GetMapping("/del")
-    public void del(String id1,String id2)
+    @RequestMapping(value = "/find")
+    public void find()
     {
-        Update update = new Update();
-        update.pull("template",new BasicDBObject("_id",id2));
-        Query query = Query.query(Criteria.where("_id").is(id1));
-        template.updateFirst(query,update,Viewtemplate.class);
+//        Update update = new Update();
+//        update.pull("template",new BasicDBObject("userid",userid));
+//        Query query = Query.query(Criteria.where("_id").is(id));
+//        template.updateFirst(query,update,Viewtemplate.class);
+
+
+        Query query = new Query(Criteria.where("template.userid").is("4412").and("id").is("11"));
+        System.out.println(template.findOne(query, Viewtemplate.class));
+
+
+
     }
 
 
     /**
-     * http://10.1.8.96:8095/rest/usersinfo/find?id=12
-     * http://10.1.8.96:8095/rest/usersinfo/update?fk=aaaa&img=bbbb&id1=12&id2=33
-     * http://10.1.8.96:8095/rest/usersinfo/add?id1=12&id2=44&view=aaa&image=444
-     * http://10.1.8.96:8095/rest/usersinfo/del?id1=12&id2=44
+     * http://localhost:8095/rest/usersinfo/find?id=5cda33f180a857acbb7619ab
+     * http://localhost:8095/rest/usersinfo/update?fk=aaaa&img=bbbb&id1=5cda33f180a857acbb7619ab&id2=33
+     * http://localhost:8095/rest/usersinfo/add?id1=5cda33f180a857acbb7619ab&id2=44&view=aaa&image=444
+     * http://localhost:8095/rest/usersinfo/del?id1=5cda33f180a857acbb7619ab&id2=44
+     *
+     *
+     * http://localhost:8095/rest/usersinfo/update?fk=aaaa&img=bbbb&id1=5cda33f180a857acbb7619ab2&id2=33
      */
 }
