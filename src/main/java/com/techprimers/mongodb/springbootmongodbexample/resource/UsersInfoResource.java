@@ -34,9 +34,11 @@ public class UsersInfoResource {
         Update update =new Update();
         update.set("template.$.view", view);
         update.set("template.$.image", image);
+        update.set("template.$.updateTime", 22);
         Query query = Query.query(new Criteria().
-                andOperator(Criteria.where("_id").is(id),
-                        Criteria.where("template").elemMatch(Criteria.where("userid").is(userid))));
+                            andOperator(Criteria.where("_id").is(id),Criteria.where("desc").is("test push"),
+                                    Criteria.where("name").is("push"),
+                        Criteria.where("template").elemMatch(Criteria.where("userid").is(userid)).elemMatch(Criteria.where("updateTime").lt(11))));
         template.updateFirst(query, update, Viewtemplate.class);
     }
 

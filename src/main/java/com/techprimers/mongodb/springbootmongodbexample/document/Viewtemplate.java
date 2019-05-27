@@ -17,6 +17,16 @@ public class Viewtemplate
         private String id;
         private String view;//视图名称
         private String image;//图片路径
+        private Long updateTime;
+
+
+        public Long getUpdateTime() {
+            return updateTime;
+        }
+
+        public void setUpdateTime(Long updateTime) {
+            this.updateTime = updateTime;
+        }
 
         public String getId() {
             return id;
