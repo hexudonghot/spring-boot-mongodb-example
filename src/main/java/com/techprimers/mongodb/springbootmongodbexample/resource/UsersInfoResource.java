@@ -36,9 +36,11 @@ public class UsersInfoResource {
         update.set("template.$.image", image);
         update.set("template.$.updateTime", 22);
         Query query = Query.query(new Criteria().
-                            andOperator(Criteria.where("_id").is(id),Criteria.where("desc").is("test push"),
-                                    Criteria.where("name").is("push"),
-                        Criteria.where("template").elemMatch(Criteria.where("userid").is(userid)).elemMatch(Criteria.where("updateTime").lt(11))));
+        andOperator(Criteria.where("_id").is(id),Criteria.where("desc").is("test push"),
+        Criteria.where("name").is("push"),
+                        Criteria.where("template")
+                        .elemMatch(Criteria.where("userid").is(userid))
+                        .elemMatch(Criteria.where("updateTime").lt(11))));
         template.updateFirst(query, update, Viewtemplate.class);
     }
 
@@ -64,7 +66,16 @@ public class UsersInfoResource {
     {
         Update update = new Update();
         update.pull("template",new BasicDBObject("userid",userid));
-        Query query = Query.query(Criteria.where("_id").is(id));
+//        Query query = Query.query(Criteria.where("_id").is(id));
+
+        Query query = Query.query(new Criteria().
+        andOperator(Criteria.where("_id").is(id),Criteria.where("desc").is("test push"),
+        Criteria.where("name").is("push"),
+        Criteria.where("template")
+        .elemMatch(Criteria.where("userid").is(userid))
+        .elemMatch(Criteria.where("updateTime").lt(66))));
+
+
         template.updateFirst(query,update,Viewtemplate.class);
     }
 
