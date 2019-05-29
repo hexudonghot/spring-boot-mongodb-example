@@ -1,5 +1,6 @@
 package com.techprimers.mongodb.springbootmongodbexample.resource;
 
+import com.alibaba.fastjson.JSON;
 import com.mongodb.BasicDBObject;
 import com.techprimers.mongodb.springbootmongodbexample.document.UserInfoDetail;
 import com.techprimers.mongodb.springbootmongodbexample.document.Viewtemplate;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -81,4 +83,21 @@ public class SResource {
         template.upsert(query, update, UserInfoDetail.class);
     }
 
+
+    @RequestMapping("/pro")
+    @ResponseBody
+    public String pro() {
+
+        ProjectionOperation project = Aggregation.project("_id")
+              //  .and("userInfo").as("setting")
+                .and("userInfo").as("userInfo");
+        MatchOperation match = Aggregation.match(new Criteria("_id").is("22")
+               // .and("pushChannals.pushType").is(channal.getPushType())
+               // .and("pushChannals.pushChannal").is(channal.getPushChannal())
+        );
+        UnwindOperation unwind = Aggregation.unwind("userInfo");
+        Aggregation aggregation = Aggregation.newAggregation(match, project, unwind);
+        AggregationResults<Object> results = template.aggregate(aggregation, "Aggregation", Object.class);
+        return JSON.toJSONString(results.getMappedResults());
+    }
 }
